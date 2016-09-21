@@ -9,3 +9,18 @@ values('193239415X', 'Hibernate In Action'  , 'Christian Bauer ', 'Java',  9.99,
 
 INSERT INTO BOOKS (ISBN,          TITLE,       AUTHOR,            GENRE,  PRICE, DESCRIPTION )
 values('1931520720', 'Stories of Your Life and Others'  , 'Ted Chiang', 'Science Fiction',  12.25, ' includes his first eight published stories plus the author''s story notes ');
+
+
+INSERT INTO USERS (USERNAME,   FIRSTNAME, LASTNAME,  ACTIVE_SINCE )
+            values('credmond', 'Conor'  , 'Redmond', '2014-12-31' );
+
+INSERT INTO USERS (USERNAME,   FIRSTNAME, LASTNAME,  ACTIVE_SINCE )
+            values('jhackett', 'Jack'  ,    'Hackett',   '2014-02-28' );
+
+
+INSERT INTO USERS (USERNAME,   FIRSTNAME, LASTNAME,  ACTIVE_SINCE )
+             values('dmcguire', 'Dougal'  ,    'McGuire',   '2014-07-04' );
+
+INSERT INTO USERS (USERNAME,   FIRSTNAME, LASTNAME,  ACTIVE_SINCE )
+            values('tcrilly', 'Ted'  , 'Crilly', '2011-12-31');
+
