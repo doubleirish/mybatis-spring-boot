@@ -1,5 +1,7 @@
 package com.example.model;
 
+import java.util.Date;
+
 /**
  * Created by credmond on 9/21/16.
  */
@@ -8,6 +10,7 @@ public class User {
   private String userName;
   private String firstName;
   private String lastName;
+  private Date activeOn;
 
   public int getId() {
     return id;
@@ -41,6 +44,14 @@ public class User {
     this.lastName = lastName;
   }
 
+  public Date getActiveOn() {
+    return activeOn;
+  }
+
+  public void setActiveOn(Date activeOn) {
+    this.activeOn = activeOn;
+  }
+
   @Override
   public String toString() {
     return "User{" +
@@ -48,6 +59,7 @@ public class User {
         ", userName='" + userName + '\'' +
         ", firstName='" + firstName + '\'' +
         ", lastName='" + lastName + '\'' +
+        ", activeOn=" + activeOn +
         '}';
   }
 }
