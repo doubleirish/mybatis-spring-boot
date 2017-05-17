@@ -1,14 +1,12 @@
 package com.example.model;
 
-/**
- * Created by Conor on 8/22/2016.
- */
 public class Book {
   private Integer id;
   private String isbn;
   private String title;
   private String description;
-  private String author;
+  private String authorFirstName;
+  private String authorLastName;
   private String genre;
   private double price;
 
@@ -44,12 +42,20 @@ public class Book {
     this.description = description;
   }
 
-  public String getAuthor() {
-    return author;
+  public String getAuthorFirstName() {
+    return authorFirstName;
   }
 
-  public void setAuthor(String author) {
-    this.author = author;
+  public void setAuthorFirstName(String authorFirstName) {
+    this.authorFirstName = authorFirstName;
+  }
+
+  public String getAuthorLastName() {
+    return authorLastName;
+  }
+
+  public void setAuthorLastName(String authorLastName) {
+    this.authorLastName = authorLastName;
   }
 
   public String getGenre() {
@@ -70,15 +76,15 @@ public class Book {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("Book{");
-    sb.append("id=").append(id);
-    sb.append(", isbn='").append(isbn).append('\'');
-    sb.append(", title='").append(title).append('\'');
-    sb.append(", description='").append(description).append('\'');
-    sb.append(", author='").append(author).append('\'');
-    sb.append(", genre='").append(genre).append('\'');
-    sb.append(", price=").append(price);
-    sb.append('}');
-    return sb.toString();
+    return "Book{" +
+        "id=" + id +
+        ", isbn='" + isbn + '\'' +
+        ", title='" + title + '\'' +
+        ", description='" + description + '\'' +
+        ", authorFirstName='" + authorFirstName + '\'' +
+        ", authorLastName='" + authorLastName + '\'' +
+        ", genre='" + genre + '\'' +
+        ", price=" + price +
+        '}';
   }
 }

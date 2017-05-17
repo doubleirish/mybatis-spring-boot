@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * Created by Conor on 8/22/2016.
- */
 @RestController
 public class BookController {
 

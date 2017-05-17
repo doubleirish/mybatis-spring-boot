@@ -1,6 +1,8 @@
 package com.example;
 
+import com.example.dao.PublisherMapper;
 import com.example.dao.UserDao;
+import com.example.model.Publisher;
 import com.example.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +26,23 @@ public class DemoApplicationTests {
   @Autowired
   UserDao userDao;
 
+  @Autowired
+  PublisherMapper publisherMapper;
+
+
+
+  @Test
+  public void findPublishers() {
+
+    List<Publisher> publishers = publisherMapper.findAll();
+    for (Publisher publisher : publishers) {
+
+      System.out.println(publisher);
+      assertThat(publisher.getName(), is(not(nullValue())));
+    }
+    assertThat(publishers.size(),is(greaterThan(0)));
+  }
+
   	@Test
   	public void findsSomeUsers() {
 
@@ -35,5 +54,8 @@ public class DemoApplicationTests {
       }
       assertThat(allUsers.size(),is(greaterThan(0)));
     }
+
+
+
 
 }

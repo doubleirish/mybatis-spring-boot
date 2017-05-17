@@ -1,13 +1,17 @@
 # mybatis-spring-boot
-a simple mybatis example app built using spring boot 
+Describes how we built up the skeleton of this simple mybatis demo app  
 
-
+If you have the Spring CLI installed 
+```
+https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started-installing-spring-boot.html#getting-started-installing-the-cli
+```
+then the following will scaffold a simple skeleton application.
 ```
 spring init -dweb,actuator,hateoas,h2,jdbc    mybatis-spring-boot
 ```
 
 
-Enable h2 console in src/main/resources/application.properties
+Enable the H2 database web console in src/main/resources/application.properties
 
 ```
 # enable H2 Console
@@ -78,7 +82,7 @@ INSERT INTO BOOKS (ISBN,          TITLE,       AUTHOR,            GENRE,  PRICE,
 values('193239415X', 'Hibernate In Action'  , 'Christian Bauer ', 'Java',  9.99, 'Hibernate in Action carefully explains the concepts you need, then gets you going.');
 
 INSERT INTO BOOKS (ISBN,          TITLE,       AUTHOR,            GENRE,  PRICE, DESCRIPTION )
-values('1931520720', 'Stories of Your Life and Others'  , 'Ted Chiang', 'Science Fiction',  12.25, ' includes his first eight published stories plus the author''s story notes ');
+values('1931520720', 'Stories of Your Life and Others'  , 'Ted Chiang', 'Science Fiction',  12.25, ' includes his first eight published stories plus the authorFirstName''s story notes ');
 ```
 
 After restarting the springboot app and loging into the H2 console
