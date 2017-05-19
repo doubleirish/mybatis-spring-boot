@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface BookMapper {
 
-  @Select("SELECT * FROM BOOKS") //SQL
+  @Select("SELECT  FROM BOOKS") //SQL
   List<Book> findAll( );
 
   @Select("SELECT * FROM BOOKS WHERE GENRE = #{genre}")
