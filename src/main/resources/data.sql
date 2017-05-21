@@ -1,4 +1,4 @@
-
+-- loaded by spring boot into H2 DB at test and application start time
 
 INSERT INTO PUBLISHERS (  NAME, PHONE   )
 values( 'Manning' ,'(425) 555-1212');
