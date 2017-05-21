@@ -24,38 +24,28 @@ import static org.hamcrest.core.Is.is;
 public class DemoApplicationTests {
 
   @Autowired
-  UserDao userDao;
-
-  @Autowired
   PublisherMapper publisherMapper;
 
-
+  @Autowired
+  UserDao userDao;
 
   @Test
   public void findPublishers() {
-
     List<Publisher> publishers = publisherMapper.findAll();
     for (Publisher publisher : publishers) {
-
       System.out.println(publisher);
       assertThat(publisher.getName(), is(not(nullValue())));
     }
-    assertThat(publishers.size(),is(greaterThan(0)));
+    assertThat(publishers.size(), is(greaterThan(0)));
   }
 
-  	@Test
-  	public void findsSomeUsers() {
-
-      List<User> allUsers = userDao.findOrderedUsers();
-      for (User user : allUsers) {
-
-        System.out.println(user);
-        assertThat(user.getUserName(), is(not(nullValue())));
-      }
-      assertThat(allUsers.size(),is(greaterThan(0)));
+  @Test
+  public void findsSomeUsers() {
+    List<User> allUsers = userDao.findOrderedUsers();
+    for (User user : allUsers) {
+      System.out.println(user);
+      assertThat(user.getUserName(), is(not(nullValue())));
     }
-
-
-
-
+    assertThat(allUsers.size(), is(greaterThan(0)));
+  }
 }

@@ -13,7 +13,7 @@ This presentation will be of interest to you :-
 ### Contents 
 In this presentation we will :-
 - Provide a brief introduction to MyBatis 
-- Demonstrate how to build and use a simple MyBatis based Data Access Object (DAO)
+- Demonstrate how to build a simple MyBatis based Data Access Object (DAO)
 - Examine some of the other useful features of Mybatis like Dynamic SQL  
 
 
@@ -27,89 +27,132 @@ In this presentation we will :-
   MyBatis instead works with SQL directly and relies on the features of the SQL language , 
   specifically aliases to simplify mapping between c.
  
+ 
+to see an example how SQL aliases could be used 
 
-### MyBatis Demo Intro
-- This is all best illustrated by showing you some code. 
+
+### @Select Annotation 
+ Mybatis piggybacks off of the  built-in "alias" feature in SQL 
+ to define the mapping between COLUMN_NAMES in UPPERCASE and Java Bean properties in CamelCase
+
+- For example in the SQL shown, the database column "UNAME" has an alias "userName"
+- MyBatis reuses this same native SQL alias feature
+- to perform the mapping
+- from database columns
+- to fields in  Java objects
+- so when mapping the results of a SQL query into a Java Object, ...
+- the "ID" Column maps to the "id" field
+- the "UNAME" column maps the the "userName" field
+- and the "LNAME" column maps to the "lastName" field
+
+
+### MyBatis Demo Intro TODO NEW SLIDE
+- Thats the theory lets look at some code examples. 
+
+  
+There's essentially three main Areas in the Demo :-
+- On one side we have a database and tables containing data
+- On the Application side ( a springboot App in this case)  we have Jave Beans that we'd like to load that data into.
+- and we're going to use Mybatis to bridge between the database and out application model 
+
+Because of time limitations, I'm going to focus mainly on the MyBatis interactions
+ and  skim over Springboot application setup and Database setup. 
+
 - The code for the example shown next is available for download from github 
 - The link is here
 
-### TODO  DEMO Video
-The following example is based off of simple SpringBoot application 
+if you want a more detailed walkthrough on how to setup from scratch
+I recommend stepping through the  README.md   file in the github demo link .
 
-In order to properly demonstrate the MyBatis API we'll need a Database to connect to.
 
-Here we using a H2 in-memory embedded database. 
-
-##
-
-It comes with some the Database Table definitions, INSERT statements  
-And everything else needed to be up and running quickly
-
+## DEMO Begins on intellij in presentation mode
 
 
 #### MyBatis Spring Boot Starter 
 ```
 pom.xml
 ```
-Mybatis provides a spring boot starter dependency to simplify mybatis setup and configuration.
+The simplest way to get started using Mybatis In a Spring boot application 
+is to include the mybatis starter dependency you see here. 
+This package includes an auto-configuration component which we'll discuss later
+
+we'll also add a dependency on the H2 database so we can setup an embedded  in-memory db.
  
 
 #### Setup H2 in-memory datasource 
 ```
 src/main/resources/application.properties
 ```
-- This is where can can setup our connection to a database. 
-- In this case we are defining an embedded in-memory database for ease of setup 
-
+This is where can can setup our connection to a database.
  
+In this case we are defining an embedded in-memory database for ease of setup 
+
+<!-- 
 
 ####  Enable H2 Web Console
-For debug purposes We can also Enable a H2 database web console .
+For debug purposes we can also enable a H2 database web console that gets bundled with our springboot webapp H2 database web  .
 we'll see how this works later 
- 
+--> 
 
 #### Create Tables
 ```
 src/main/resources/schema.sql
 ```
-- SpringBoot has a feature where we can Initialize our database  at application or test startup time.
+- This file defines the schema of the tables we're using for this test.
+ 
+<!--
+SpringBoot has a feature where we can Initialize our database  at application or test startup time.
 - Just add your DDL to a special file called  schema.sql into the src/main/resources directory
 (obviously you would not normally do this for production apps)
- 
-
-
 http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-initialize-a-database-using-spring-jdbc
+
+--> 
+
+
+
 #### Populate tables
 ```
-src/main/resources/schema.sql
+src/main/resources/data.sql
 ```
-Populate the PUBLISHERS table by including a data.sql file in src/main/resources
- 
+And here's some sample data that we will load into the tables.
 
+<!--
 After restarting the springboot app and logging into the H2 console
 you should see a new PUBLISHERS table with data populated.
-
+-->
 
 #### The Publisher Java Bean
 ```
 src\main\java\com\example\model\Publisher.java
 ```
-when we read rows in the PUBLLISHERS table we'd like data to go to this java bean
+All the classes in the model package represent places where we want to store data loaded from the database.
+
+When we read rows in the PUBLLISHERS table we'd like data to go into instances of this class.
  
-#### the  Publisher Dao Interface
+#### the  Publisher DAO Interface
 ```
 src\main\java\com\example\dao\PublisherMapper.java
 ```
+This Publisher interface defines all the method signatures that we will implement.
 
+right now there, there's no implementation. this is just the interface .
+
+so lets add one
 
 #### @Mapper
+Part of the mybatis starter package for spring boot is an auto-configuration setup.
+This contains an automatic scan for classes marked with th Mybatis @mapper annotation
+The @Mapper annotation lets us register this class with Mybatis.
+
 This is similar to the @repository or @Component tags used by spring to register beans 
 using component scanning rather than 
 
 #### @Select
-- this is how we can call the database  from our code.
-- if you look carefull we are also performing the mapping 
-
+The Second step is build a @Select annotation that defines a mapping from DB cols to 
+Mybatis will use the SQL we provide to retrieve rows from a database.
+And it uses the Alias mapping to help map from DB cols to Bean properties
+ 
+prefix findAll() with
 ```
  @Select("SELECT ID as id,  NAME as name, PHONE as phoneNumber from PUBLISHERS") //SQL
 ```
@@ -124,27 +167,37 @@ use wild card
  
 
 #### Run Test
+let's see if this works with a test
 
-#### @Select with Wild Card
-for the book object we have a lot of columns 
-this could be tedious to do 
-fortunately mybatis comes with wild card mapping
+#### @Select with underscore conversion
 ```
 src\main\java\com\example\dao\BookMapper.java
 ```
+here's another  bean we'd like to load data into 
+We were lucky with the last model class as most of it's property_names were exactly identical to the table column names 
+and we didn't need to write many  explict alias mappings 
+
+in this model, we're not so lucky, as the properties and columns are similar  but unfortunately not exactly the same 
+as the column names contain underscores and the model property names don't
+by default AUTHOR_FIRST_NAME column is not equivalent to CamelCase authorFirstName
+
+
 wildcards work when the column name and the java property name are exactly the same
 
 ```
-@Select("SELECT TITLE as title , FIRST_NAME as firstName  FROM BOOKS")
+@Select("SELECT TITLE as title , AUTHOR_FIRST_NAME as authorfirstName  FROM BOOKS")
 ```
-- in order to use the wildcard mapping to map compatible multi_word columns 
-- you'll need to enable the mapUnderscoreToCamelCase propert in applications.properties
+
+- but if we enable  enable the mapUnderscoreToCamelCase property in applications.properties, 
+mybatis WILL perform the undercore to camle case mapping you see here
+
 - Then you'll be able to map all the columns with the following wonderflully concise statement       
 ```
   @Select("SELECT * FROM BOOKS") //SQL
   List<Book> findAll( );
 ```
-#### @Select with parameters
+#### @Select with @Param parameters
+in the same file you'see see how we can pass in parameter values 
 ```
   @Select("SELECT * FROM BOOKS WHERE GENRE = #{genre}")
   List<Book> findByGenre(@Param("genre") String genre);
@@ -159,27 +212,13 @@ wildcards work when the column name and the java property name are exactly the s
 - This allows you to paste in large SQL queries right into your code.
 #### demo wrap up
 
-- We covered the @Select annotation here but there equivalent annotations for INSERT, UPDATES and Dletes
--there's also a power dynamic sql feature whe=ich we'' cover in the next set of slides'
+- We only covered the @Select annotation here.
+- but there equivalent annotations for INSERT, UPDATES and DELETES
+- there's also a powerful  dynamic sql feature whe=ich we'' cover in the next set of slides'
 #Demo End - Slides Begin
  
 
 
-
-### @Select Annotation 
- To Recap what we saw in the Demo 
-- SQL comes with a built-in "alias" feature
-that can map a column name to any label you want
-- Mybatis piggy-backs off this feature to provide the   Mapping from database table columns to java bean properties
-- For example in the SQL shown the database column "UNAME" has an alias "userName"
-- MyBatis reuses this same native SQL alias feature
-- to perform the mapping
-- from database columns
-- to fields in  Java objects
-- so when mapping the results of a SQL query into a Java Object, ...
-- the "ID" Column maps to the "id" field
-- the "UNAME" column maps the the "userName" field
-- and the "LNAME" column maps to the "lastName" field
 
 ### MyBatis Mapping Choices 
 MyBatis provides two main approaches for mapping between Java objects and Database tables
