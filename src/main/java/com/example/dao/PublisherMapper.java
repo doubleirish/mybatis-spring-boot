@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface PublisherMapper {
-  @Select("SELECT *, PHONE as phoneNumber from PUBLISHERS") //SQL
+  @Select("SELECT * , PHONE as phoneNumber from PUBLISHERS") //SQL
   List<Publisher> findAll();
 
 //  === DB ===

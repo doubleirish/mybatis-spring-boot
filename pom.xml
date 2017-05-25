@@ -30,6 +30,12 @@
     </properties>
 
     <dependencies>
+        <!--   mybatis starter -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>1.1.1</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -51,17 +57,15 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
 
+
+
+
+
+        <!--   H2 DB, used in an embedded, in-memory mode-->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
-        </dependency>
-
-        <!-- all mybatis rela -->
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>1.1.1</version>
         </dependency>
 
 

@@ -14,7 +14,8 @@ This presentation will be of interest to you :-
 In this presentation we will :-
 - Provide a brief introduction to MyBatis 
 - Demonstrate how to build a simple MyBatis based Data Access Object (DAO)
-
+- Examine some of the other useful features of Mybatis like Dynamic SQL  
+- And See the situation where MyBatis really shines.
 
 
 
@@ -22,23 +23,17 @@ In this presentation we will :-
 
 - MyBatis is a persistence framework that is built  on top of the Java JDBC API.
 
--  Mybatis reduces the complexity of  and accessing s database from a relational database .
+- The purpose of Mybatis is to reduce the complexity of storing and retrieving data from a relational database .
 - It hides away a lot of the low level complexity you would normally encounter when working with JDBC directly.
- 
-It works by mapping SQL statements into your DAO methods
 
-we'll see an example of how this works in the next
+- MyBatis is similar to Hibernate/JPA in that they both help simplify the interaction with the database
+- But where JPA takes an Object Centric approach and generates  SQL behind the scenes ,
+  MyBatis instead works with SQL directly and relies on the features of the SQL language , 
+  specifically aliases to simplify mapping between DB tables and Java Beans.
  
   
 
-
-
 ### @Select Annotation 
-Myabtis provides two annotations which you can use to turn a DAO interface into
-MyBatis provides a @Select annotation you can add to your DAO interface
-behind the scenes mybatis will build an implementation of your interface that register it as a spring bean 
-you can then inject that bean in your code and when you call methods on it 
-
  Mybatis cleverly utilizes the  built-in "alias" feature in SQL 
  to help define the mapping between COLUMN_NAMES shown her in UPPERCASE and Java Bean properties shown in CamelCase
 
@@ -52,28 +47,24 @@ you can then inject that bean in your code and when you call methods on it
 - the "UNAME" column maps the the "userName" field
 - and the "LNAME" column maps to the "lastName" field
 
-### &Mapper Annotation 
--the spring boot mybatis starter dependency includes an auto configuration . 
- At pplicaton startup the autoconfiguration will 
-  scan for a Datasource
-  create default instances of mybatis factory beans and link the datasource 
-  scan for interfaces with @Mapper tags and register them with MyBatis
-  MyBatis will behind the scenes effectively build an impementation of the interface and register them as beans in the springcontext
-  In your application code you can inject these beans and call them 
-  
-  bean interfce  code -> scan -> bean immplementation - inject bean name in your code, -> cand call 
-  
 
 ### MyBatis Demo Intro TODO NEW SLIDE
-- Lets try this out in a demo
- 
+- So Thats the general theory,  lets take a look at some code examples. 
 
-Because of time limitations, I'm going to focus mainly on the building a DAO using MyBatis
- I'm not going to cover   Springboot application and  Database setup. 
- but there is a link here if you want download the code and try it yourself
+  
+There's essentially three main Areas in the Demo :-
+- On one side we have a database and tables containing data
+- On the Application side ( a springboot App in this case)  we have Jave Beans that we'd like to load that data into.
+- and we're going to use Mybatis to bridge between the database and our application model objects.
 
- 
+Because of time limitations, I'm going to focus mainly on the MyBatis interactions
+ and  skim over Springboot application setup and Database setup. 
 
+- The code for the example shown next is available for download from github 
+- The link is here
+
+if you want a more detailed walkthrough on how to setup from scratch
+I recommend stepping through the  README markdown   file in the github demo link shown here .
 
 
 ## DEMO Begins on intellij in presentation mode
@@ -86,10 +77,24 @@ pom.xml
 We're using a Springboot application and so the first thing you'll need 
 is to add a dependency for  MyBatis into your build file. 
 in this case we're using maven
-I recommend using the  mybatis starter dependency you see here. 
+I recomment using the  mybatis starter dependency you see here. 
+
+[ctrl-click to internals of dependency]
+
+This package   includes an auto-configuration component which will reduce the amount of mybatis configuration required
+
+we've also added a dependency for a H2 database. 
+We'll use this to setup an embedded  in-memory database 
+which we'll be using in our demo.
  
+
+#### Setup H2 in-memory datasource 
+```
+src/main/resources/application.properties
+```
+This is where can can setup our connection to a database.
  
- 
+In this case we are defining an embedded in-memory database for ease of setup for demonstrative purpise
 
 
 
@@ -99,21 +104,34 @@ src/main/resources/schema.sql
 ```
 - This file defines the schema of the tables we're using for this test.
  
- 
+<!--
+SpringBoot has a feature where we can Initialize our database  at application or test startup time.
+- Just add your DDL to a special file called  schema.sql into the src/main/resources directory
+(obviously you would not normally do this for production apps)
+http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-initialize-a-database-using-spring-jdbc
+
+--> 
+
+
 
 #### Populate tables
 ```
 src/main/resources/data.sql
 ```
 And here's some sample data that we will load into the tables.
- 
+
+<!--
+After restarting the springboot app and logging into the H2 console
+you should see a new PUBLISHERS table with data populated.
+-->
 
 #### The Publisher Java Bean
 ```
 src\main\java\com\example\model\Publisher.java
 ```
 All the classes in the model package represent places where we want to store data loaded from the database.
- 
+
+for example, When we read rows in the PUBLISHERS table, we'd like the data to go into instances of this class.
  
 #### the  Publisher DAO Interface
 ```
@@ -165,7 +183,37 @@ When Mybatis detects classes with the @Mapper interface  at application or test 
 it will generate an implementation class behind the scenes
 Lets test the  @Select annotaion we just wrote by running a test
 
- 
+#### @Select with underscore conversion
+```
+src\main\java\com\example\dao\BookMapper.java
+```
+here's another bean we'd like to load data into. 
+We were lucky with the last model class as most of it's property names were  identical to the table column names 
+and we didn't need to write many  explict alias mappings 
+
+but in this model, we're not so lucky, as the names of the  java properties and database columns are similar,
+  but unfortunately not exactly the same.
+
+Here, the column names contain underscores and the model property names don't.
+
+So , AUTHOR_FIRST_NAME column is not equivalent to CamelCase authorFirstName
+
+
+This would normally require us to explicting map the columns to java prperties like so 
+```
+@Select("SELECT AUTHOR_FIRST_NAME as authorfirstName  FROM BOOKS")
+```
+```
+src\main\resources\applications.properties 
+```
+- but, if we     enable the mapUnderscoreToCamelCase property in applications.properties, 
+mybatis WILL perform the underscore to camelcase mapping automatically for you.
+
+- Now you'll be able to map all the columns with the following wonderflully concise statement       
+```
+  @Select("SELECT * FROM BOOKS") //SQL
+  List<Book> findAll( );
+```
 #### @Select with @Param parameters
 in the same file you can  see an example of how we can   pass in parameter values to the SELECT statement
 The @param annotation, another mybatis specific annotation, 
@@ -271,4 +319,77 @@ and a link to some other Resources   if you want to learn more about MyBatis.
 We hope you've enjoyed this brief introduction to MyBatis.
 
 Thank You
- 
+
+# ============ DEPRECATEd slides=====================
+   
+ ### ORM Mapping issue
+The problems with moving data between Applications and a relational database
+typically the field names, types and structures don't quite line up
+and a developer often need to map from one domain to the other
+some examples of simple mapping issues could be
+differences between the database column names and the names of the fields in the java objects you're storing data in.
+We also need to account for differences in the TYPE of the fields on the java and Database sides .
+
+
+### Association issues 
+More complex mapping issues can be seen
+when comparing the structural differences between Tables and Java Object Graphs
+In the java example above, the association between a parent Blog object and a child Comment Object
+is a one way reference.
+But when representing the same relationship in a Database Table using a foreign key
+the association is a bidirectional relationship.
+
+### Granularity 
+Another  mapping issue occurs when there is a big difference in the granularity of structures between the Java and database sides
+For example
+a single "Address" class on the Java side
+might be represented as multiple ADDRESS, STATE and COUNTRY tables on the Database side.
+The main takeaway here is that mapping between these very different structures is hard
+and any framework that helps simplify this  mapping, like MyBatis,  is a very good thing.
+So, that's the problem...
+Now lets take a look at the solution..
+
+
+
+
+### MyBatis Design pattern
+Before we delve into the code, lets take a quick look at the design pattern behind MyBatis.
+MyBatis is an implementation of the "Data Mapper" design pattern.
+as described by Martin Fowler in his book
+"Enterprise Application Architecture"
+A DataMapper, or more simply a Mapper
+is a class that sits between
+your domain objects and the database
+and helps transfer data between them
+Thats the theory, lets look at some examples next.
+###
+JPA tries to be database agnostic
+which can make it harder to embed database specific features that you need to improve performance
+MyBatis has no such barriers.
+During this presentation we looked at some of the underlying reasons why Object-Relation mapping is hard.
+Anything that makes that mapping easier is a good thing.
+And MyBatis's trick of reusing the SQL 'alias'
+allows you do do a lot of the mapping for free
+while still having perfectly valid SQL
+We saw that building Dynamic SQL and delivering pre-existing complex SQL reports
+is something the MyBatis Excels at
+and significantly easier than the JPA equivalents
+we showed how the SQL centric approach used by MyBatis
+makes it easier to get started
+and can actually help with debugging and performance
+We hope you've enjoyed this brief introduction to MyBatis
+Thank You!
+Pool 1
+
+
+### Annotations vs XML
+Given a choice between XML and Annotation based implementations, which should you choose?
+- My advice would be to use annotation based mapping where possible
+as these are generally easy to write and understand.
+- If the queries you want to use are more complicated,
+in that they require dynamic SQL or collections or nested-selects
+then you'll need to use XML based mappers
+which are more verbose but also more powerful.
+- The SQL centric approach adopted by MyBatis
+has a number of advantages for the developer
+which we'll take a look at in the next slides.
