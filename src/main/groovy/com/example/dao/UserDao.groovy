@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Select
 @Mapper
 public interface UserDao {
 
-    // an eaxmple of a multi-line sql using groovy triple -quote
+    // an example of a multi-line sql using groovy triple -quote
     @Select(""" SELECT ID, 
                        FIRST_NAME   as firstName, 
                        LAST_NAME    as lastName, 

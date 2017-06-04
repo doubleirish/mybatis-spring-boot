@@ -16,7 +16,6 @@ public interface BookMapper {
   @Select("SELECT * FROM BOOKS WHERE GENRE = #{genre}")
   List<Book> findByGenre(@Param("genre") String genre);
 
-
 //  CREATE TABLE IF NOT EXISTS BOOKS (
 //      ID                  INT          NOT NULL  AUTO_INCREMENT PRIMARY KEY
 //      ,ISBN               VARCHAR(13)  NOT NULL  CONSTRAINT books_isbn_uc UNIQUE

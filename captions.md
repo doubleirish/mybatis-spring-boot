@@ -9,167 +9,148 @@ This presentation will be of interest to you :-
 - writing applications that  access a relational database
 - and think that the current approaches using JPA and JDBC are too complicated.
 
-
 ### Contents 
 In this presentation we will :-
 - Provide a brief introduction to MyBatis 
-- Demonstrate how to build a simple MyBatis based Data Access Object (DAO)
-
-
-
+- And Demonstrate how to build and use a simple  (DAO)  using Mybatis
 
 ###  What is MyBatis
+MyBatis is a Persistence Framework For Java.
+It works on top of JDBC 
+but eliminates most of the complexity and boilerplate of using  JDBC  directly.
 
-- MyBatis is a persistence framework that is built  on top of the Java JDBC API.
+It works by mapping Java methods to SQL statements
 
--  Mybatis reduces the complexity of  and accessing s database from a relational database .
-- It hides away a lot of the low level complexity you would normally encounter when working with JDBC directly.
- 
-It works by mapping SQL statements into your DAO methods
+If you provide a correctly annotated DAO/Mapper Interface
+Mybatis will use that tobuild an implementation that can execute SQL
 
-we'll see an example of how this works in the next
+
+we'll see an example of how this works in the next slide
  
   
 
+### &Mapper Annotation 
+The mybatis-starter maven dependency for springboot  
+includes an auto configuration component . 
+ At applicaton startup the auto configuration will 
+- scan for a Datasource to work with
+- it will also scan for Java Interfaces that include the Mybatis  @Mapper annotation 
+   and register those interfaces with MyBatis
+
+- for each  elligible Interface it finds,
+ it will   build an implementation of that interface 
+   and register it as a spring bean in the spring context.
+- In your application code you can inject these MyBatis Mapper beans and call their methods 
+- calling the findAll() method on the generated bookMapper bean 
+   will cause the "SELECT * FROM BOOKS" SQL that was inside  the @Select annotation
+   to be   executed against the database represented by the datasource
+- finally the bookMapper bean will attempt to map the results from the SQL query
+   into Book objects that are returned to the callern - inject bean name in your code, -> cand call 
+  
+
+### @Select Annotation result mapping
 
 
-### @Select Annotation 
-Myabtis provides two annotations which you can use to turn a DAO interface into
-MyBatis provides a @Select annotation you can add to your DAO interface
-behind the scenes mybatis will build an implementation of your interface that register it as a spring bean 
-you can then inject that bean in your code and when you call methods on it 
 
- Mybatis cleverly utilizes the  built-in "alias" feature in SQL 
- to help define the mapping between COLUMN_NAMES shown her in UPPERCASE and Java Bean properties shown in CamelCase
-
-- For example in the SQL shown, the database column "UNAME" has an alias "userName"
-- MyBatis reuses this same native SQL alias feature
-- to perform the mapping
+in the SQL snippet shown here, 
+   the database column "UNAME" has an alias "userName"
+   
+- MyBatis reuses this   alias feature
+- to perform the mapping  of results 
 - from database columns
 - to fields in  Java objects
-- so when mapping the results of a SQL query into a Java Object, ...
+
+- so when mapping the results of a SQL query into a Java Object, 
 - the "ID" Column maps to the "id" field
 - the "UNAME" column maps the the "userName" field
 - and the "LNAME" column maps to the "lastName" field
 
-### &Mapper Annotation 
--the spring boot mybatis starter dependency includes an auto configuration . 
- At pplicaton startup the autoconfiguration will 
-  scan for a Datasource
-  create default instances of mybatis factory beans and link the datasource 
-  scan for interfaces with @Mapper tags and register them with MyBatis
-  MyBatis will behind the scenes effectively build an impementation of the interface and register them as beans in the springcontext
-  In your application code you can inject these beans and call them 
-  
-  bean interfce  code -> scan -> bean immplementation - inject bean name in your code, -> cand call 
-  
-
 ### MyBatis Demo Intro TODO NEW SLIDE
-- Lets try this out in a demo
- 
+in the following demo we will use  Mybatis to build  a DAO.
 
-Because of time limitations, I'm going to focus mainly on the building a DAO using MyBatis
- I'm not going to cover   Springboot application and  Database setup. 
- but there is a link here if you want download the code and try it yourself
+We will create our DAO inside  a Spring boot application that connects to a H2 embedded in-memory database            
 
- 
-
-
+there is a link here if you want download the code from github and try it yourself
 
 ## DEMO Begins on intellij in presentation mode
 
 
-#### MyBatis Spring Boot Starter 
+#### MyBatis Spring Boot Starter
+ 
 ```
 pom.xml
 ```
-We're using a Springboot application and so the first thing you'll need 
-is to add a dependency for  MyBatis into your build file. 
-in this case we're using maven
-I recommend using the  mybatis starter dependency you see here. 
+  We're using a Springboot application with a maven build file and so the first thing we'll need 
+is to add the mybatis-spring-boot-starter dependency for  MyBatis  .
  
- 
- 
-
-
 
 #### Create Tables
 ```
 src/main/resources/schema.sql
 ```
-- This file defines the schema of the tables we're using for this test.
+- next we'll define some database  tables we'll use in this demo.
  
  
-
 #### Populate tables
 ```
 src/main/resources/data.sql
 ```
-And here's some sample data that we will load into the tables.
+and then populate those tables with some data
  
 
 #### The Publisher Java Bean
 ```
 src\main\java\com\example\model\Publisher.java
 ```
-All the classes in the model package represent places where we want to store data loaded from the database.
+All the classes in the model package will be used to to store data loaded from the database.
  
  
 #### the  Publisher DAO Interface
 ```
 src\main\java\com\example\dao\PublisherMapper.java
 ```
-This Publisher Data-Access-Object or Dao interface defines signatures of all   the methods
-that we will use to interact with the PUBLISHERS table.
+finally the the  Publisher  Mapper interface ,   defines the signatures of all  the DAO methods  we want to create.
 
-right now,  we havent written any  actual  implementation yet . this is just the interface .
+Right now,  this is just an empty interface .
 
-so lets add an implementation
-
-#### @Mapper
-Part of the mybatis starter package for spring boot is an auto-configuration setup.
-This contains an automatic scan for classes marked with the Mybatis @Mapper annotation
-The @Mapper annotation lets us register this class with Mybatis.
-
-This is quite  similar to the How the Spring uses the @Repository or @Component tags  to identify  beans 
-during the  component scanning stage at apploication startup
+ lets annotate it up so mybatis can   build us an  implementation
+                 This
+####  AutoConfiguration and  the @Mapper
+The first thing to do is to add The @Mapper annotation to register this class with Mybatis.
 
 #### @Select
-The Next step is add a @Select annotation that will run a query on the database and help map the results  to a Java model object
-
-Mybatis will use the SQL we provide to retrieve rows from a database.
-And it uses the Alias mapping to help map from DB cols to Bean properties
+The Next step is add an @Select annotation that contains the SQL query we want to run on the database
  
-TYPE --> prefix findAll() with
+ 
+**TYPE** --> prefix findAll() method  fully qualified alias mapping
 ```
  @Select("SELECT ID as id,  NAME as name, PHONE as phoneNumber from PUBLISHERS") //SQL
 ```
-since the ID and NAME DB colums have the exact same name as the Java model property name 
-we want to map the results to
+This is using explicit column name to java proert name mapping but since the ID and NAME DB colums have the exact same name as the Java model property  
+ 
 we can drop the explict alias mapping 
-TYPE --> drop unneeded aliases 
+**TYPE** --> drop unneeded aliases 
 ```
 @Select("SELECT ID,  NAME, PHONE as phoneNumber from PUBLISHERS")
-```
-When the DB column names in the result match the java model prperty names exactly 
-we can drop the explict listing of column names and use a wildcard opertaer
-here we've used the wildcard to map  all columns in the result except for the PHONE column 
-which requires an explict mapping as the db sourcename anbd the java traget name are different
+```           
+Since we want all the columns in the PUBLISHER table to be returned we can simplify this further using a wild card
+
+**TYPE** --> use wild card 
 ``` 
 @Select("SELECT *, PHONE as phoneNumber from PUBLISHERS")
 ``` 
  
 
-#### Run Test
-When Mybatis detects classes with the @Mapper interface  at application or test startup 
-it will generate an implementation class behind the scenes
-Lets test the  @Select annotaion we just wrote by running a test
+#### Run Test 
+Lets see if this works by calling the findAll() method from a UnitTest
 
  
 #### @Select with @Param parameters
-in the same file you can  see an example of how we can   pass in parameter values to the SELECT statement
-The @param annotation, another mybatis specific annotation, 
-is used to link parameters from the interface method to predicates in the SELECT statement
+```
+src\main\java\com\example\dao\BookMapper.java
+```
+Lets take a look at another mapper interface  theres an example of how pass to pass itn parameter values to a SELECT statement
+The MyBatis @param annotation, is used to link parameters from the interface method to matching expressions in the SELECT statement
 ```
   @Select("SELECT * FROM BOOKS WHERE GENRE = #{genre}")
   List<Book> findByGenre(@Param("genre") String genre);
@@ -179,9 +160,9 @@ is used to link parameters from the interface method to predicates in the SELECT
 ``` 
  src\main\groovy\com\example\dao\UserDao.groovy
 ```
-- If you enable Groovy compilation in your project,
-- then you can use the @Select annotation in a groovy class like this one.
-- Now you can use the handy triple-quote groovy syntax to supplu multi-line contents to the @Select annotation  
+- if you enable   Groovy compilation in your project  
+ and areUsing A Groovy class for you Mapper 
+ then you can use the  handy triple-quote groovy syntax for supplyin a  multi-line value to the @Select annotation  
 - This allows you to paste in large SQL queries right into your code.
 
 #### demo wrap up
@@ -192,41 +173,21 @@ is used to link parameters from the interface method to predicates in the SELECT
 #Demo End - Slides Begin
  
 
-### MyBatis Mapping Choices 
-in the Demo we saw how to use the @select annotation for  mapping between Database tables and Java objects.
--  I typically use the @ Annotation option for mapping relatively simple tables and queries 
--   when dealing with more complex mapping where want want to map to nested classes 
-or if we want to   Dynamic SQL
-then I'd suggest taking a look at the Mybatis's XML based mapping which we 'll look at next.
- 
-
-### XML Mapping
-- With XML based mapping the SQL statements are no longer co-located with our interface class
-but placed in a separate XML file.
-- There are three main parts to this mapping
-- firstly a Book model class is used to store the results of the findAllBooks() query
-- an interface  is  used to define the DAO (Data Access Object) operations , just like before
-- Finally we   have a new XML file which defines the mapping from database query  results to Java fields.
-
-### Dynamic SQL
-- One reason for choosing the XML based mapping in MyBatis 
-is if you need to dynamically change the SQL at runtime.
-
-- An example of a situation where Dynamic SQL could be used
-is for a Web Search form with a number of optional fields.
-
--in this case we don't know which fields are relevant to the search until the user submits the form 
-
-- We can use the MyBatis <if> tags to optionally include SQL predicates
-when certain optional fields in the Java search form object are populated
-
-- Depending on what fields were populated, we could have
-three different SQL SELECT statements generated.
-- when a "first name" was included in the search form 
-- or when a last name was included
-- or when both names were included
+This Demo   
 
 
+#Summary 
+- That Demo concludes our presentation 
+- To recap what we've learned
+- Mybatis links Java interface methods to SQL statements
+
+-MyBatis uses SQL directly , there is no generation of SQL like with some alteratives like JPA 
+
+- Result mapping is based off of existing SQL language constriucts like  aliases and wildcards, so there is no new mapping language to learn
+
+- We saw how we could build a Simple DAO with just a few annotations 
+
+- And finally we saw how MyBatis and Groovy work particularly well for multiline SSQL statements 
 ### Advantages
 
 ### Learning Curve
@@ -262,13 +223,12 @@ or database specifc features for performance reasons
 - Demo
 - 
 
-### Conclusion 
+### Thank You + Resources 
+I hope you've found enjoyed this  brief introduction to MyBatis.
 
-here's a link to the code used in this presentation 
+Included here is  a link to the code used in the demonstration 
 
-and a link to some other Resources   if you want to learn more about MyBatis. 
+and a link to some other Useful Resources   
 
-We hope you've enjoyed this brief introduction to MyBatis.
-
-Thank You
+Thank You!
  

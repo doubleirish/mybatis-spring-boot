@@ -21,16 +21,17 @@ import static org.hamcrest.core.Is.is;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DemoApplicationTests {
+public class DemoTest {
 
   @Autowired
-  PublisherMapper publisherMapper;
+  PublisherMapper publisherMapper;  // Mybatis generated bean
 
   @Autowired
   UserDao userDao;
 
   @Test
   public void findPublishers() {
+    System.out.println( publisherMapper.getClass().getName());
     List<Publisher> publishers = publisherMapper.findAll();
     for (Publisher publisher : publishers) {
       System.out.println(publisher);
@@ -38,6 +39,19 @@ public class DemoApplicationTests {
     }
     assertThat(publishers.size(), is(greaterThan(0)));
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   @Test
   public void findsSomeUsers() {

@@ -10,10 +10,10 @@ public class Book {
   private String genre;
   private double price;
 
+  // setters , getters and toString()
   public Integer getId() {
     return id;
   }
-
   public void setId(Integer id) {
     this.id = id;
   }
@@ -21,7 +21,6 @@ public class Book {
   public String getIsbn() {
     return isbn;
   }
-
   public void setIsbn(String isbn) {
     this.isbn = isbn;
   }
@@ -29,7 +28,6 @@ public class Book {
   public String getTitle() {
     return title;
   }
-
   public void setTitle(String title) {
     this.title = title;
   }
@@ -37,7 +35,6 @@ public class Book {
   public String getDescription() {
     return description;
   }
-
   public void setDescription(String description) {
     this.description = description;
   }
@@ -45,7 +42,6 @@ public class Book {
   public String getAuthorFirstName() {
     return authorFirstName;
   }
-
   public void setAuthorFirstName(String authorFirstName) {
     this.authorFirstName = authorFirstName;
   }
@@ -53,7 +49,6 @@ public class Book {
   public String getAuthorLastName() {
     return authorLastName;
   }
-
   public void setAuthorLastName(String authorLastName) {
     this.authorLastName = authorLastName;
   }
@@ -61,7 +56,6 @@ public class Book {
   public String getGenre() {
     return genre;
   }
-
   public void setGenre(String genre) {
     this.genre = genre;
   }

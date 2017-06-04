@@ -2,9 +2,6 @@ package com.example.model;
 
 import java.util.Date;
 
-/**
- * Created by credmond on 9/21/16.
- */
 public class User {
   private int id;
   private String userName;
@@ -12,6 +9,7 @@ public class User {
   private String lastName;
   private Date activeOn;
 
+  // setters , getters and toString()
   public int getId() {
     return id;
   }
