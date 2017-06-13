@@ -7,9 +7,8 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 @Mapper
-public interface PublisherMapper {
-  @Select("SELECT *, PHONE as phoneNumber from PUBLISHERS")
-
+ public interface PublisherMapper {
+  @Select("SELECT *, PHONE as phoneNumber from PUBLISHERS") //SQL
   List<Publisher> findAll();
 
 //  === DB ===
